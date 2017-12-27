@@ -1,0 +1,45 @@
+correlation = load('corelation.csv');
+cofficientList = load('cofficientList.csv');
+Part_1 = load('StarLightCurves_TRAIN');
+Part_2 = load('StarLightCurves_TEST');
+PreData = [ Part_1; Part_2 ];
+class = PreData(:, 1);
+accuracy = calculate_each_time_series_Accuracy( correlation, cofficientList, class);
+
+function accuracy = calculate_each_time_series_Accuracy( correlation, cofficientList, class)
+    m = size( class, 1);
+    n = size(correlation,1);
+    accuracy = zeros(m,1);
+    classPlot = cell( max(class) ,1);
+    %k = 1;
+    for i = 1 : m
+        acc_now = 0;
+        this_class = class(i ,:);
+        for j = 1 : n
+            %index = k
+            if( class( correlation(j, (i-1)*2+1 ) ) == this_class)
+                acc_now = acc_now + 1;
+            end
+        end
+        ave = sum(correlation(:, i*2))/n;
+        disp(['Number ', num2str(i) ,', class is ',num2str(class(i,:)),', accuracy is ', num2str(acc_now/n*100),'%, min distance is ',num2str(cofficientList(i,2)),', max distance is ',num2str(cofficientList(i,1)),', ave is ',num2str(ave)]);
+        classPlot{class(i,:), :} = [classPlot{class(i,:), :}; acc_now/n, cofficientList(i,2), cofficientList(i,1), ave ];
+        accuracy(i,:) = acc_now/size(correlation,1) * 100;
+    end
+    for i = 1 : max(class)
+        figure(i);
+%         scatter3( classPlot{i,:}(:,3), classPlot{i,:}(:,2), classPlot{i,:}(:,1),'.');
+%         xlabel('Max distance');
+%         ylabel('Min distance');
+%         zlabel('Accuracy');
+%         size(classPlot{i,:},1)
+        scatter(classPlot{i,:}(:,4),classPlot{i,:}(:,1),'.');
+        xlabel('Ave distance');
+        ylabel('Accuracy');
+        hold on;
+        grid on;
+    end
+    figure(4);
+    classPlot
+
+end
