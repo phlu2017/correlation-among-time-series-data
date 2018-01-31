@@ -1,0 +1,7 @@
+function data = PAA(s, PAAcoeffi)
+   len = length(s);        
+   PAAcoeffi = len/PAAcoeffi;
+   segLen = len/PAAcoeffi;    
+   sN = reshape(s, segLen, PAAcoeffi);   
+   data = mean(sN);                     
+end
