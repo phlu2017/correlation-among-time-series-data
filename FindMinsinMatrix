@@ -1,0 +1,9 @@
+function [Mins, MinsR, MinsC] = FindMinsMatrix( matrix, NumbersMin)
+    [R,C] = ndgrid(1:size(matrix,1),1:size(matrix,2));
+    [b,idx] = sort(matrix(:));
+    Mins = b(1:NumbersMin,:);
+    Rsorted = R(idx);
+    Csorted = C(idx);
+    MinsR =  Rsorted(1:NumbersMin,:);
+    MinsC =  Csorted(1:NumbersMin,:);
+end
