@@ -12,7 +12,9 @@ for i = [2, 4, 8, 16, 32, 64, 128, 256, 512]
     
     % BuildDM for PAAData
     [PAADMap, MPI, timeSeriesI, time] = BuildMP( PAAData, queryLength, i);
+    
     RecordT(log2(i)+1, 1) = time;
+    
     m = queryLength/i;
     Minsofar = inf;
 
@@ -20,23 +22,15 @@ for i = [2, 4, 8, 16, 32, 64, 128, 256, 512]
     [Mins, MinsR, MinsC] = FindMinsMatrix( PAADMap, floor(size(PAADMap, 2)^2/2));
     start = 1;
     r = Mins;
-    while( r(start) < Minsofar)%size(r,1) ~= 0 )
-        %r = find ( Mins(start : size(Mins,1), 1) < Minsofar);
-%         if( )
-%             break;
-%         end
-%         dist = sqrt( sum( ( Data(( MinsR( r(1)+start-1 )-1 )*queryLength+1: MinsR( r(1)+start-1  )*queryLength) ...
-%             - Data(( MinsC( r(1)+start-1) -1 )*queryLength+1: MinsC( r(1)+start-1  )*queryLength)).^2));
+    while( r(start) < Minsofar) )
+ 
                 dist = sqrt( sum( ( Data(( MinsR(start)-1 )*queryLength+1: MinsR( start )*queryLength) ...
             - Data(( MinsC( start) -1 )*queryLength+1: MinsC( start )*queryLength)).^2));
-
 
         if(Minsofar > dist)
             Minsofar = dist;
         end
-        %PAAdistance = PAADMap(MinsR(r(1+start)), MinsC(r(1+start))); 
         start = start +1;
-        %r = find ( Mins(start : size(Mins,1), 1) < Minsofar);
     end
     toc
     disp(['Done...smallest distance = ', num2str(Minsofar)]);
