@@ -1,0 +1,32 @@
+for i = [2 ,4, 8,16, 32, 64, 128, 256 ]
+    
+    PAAData = PAA(Data, i);
+    [MP, MPI, timeSeriesI, time] = BuildMP( PAAData, queryLength, i);
+    timeMatrix(log2(i)+1,1) = time;
+    ratio = x./MP;
+    [r1,c1] = find(ratio<1);
+
+    (size(c1,1)/(9253*9253/2))*100 %check
+    [r, c]=find(MP <= threshold);
+    FalseP = 0;
+    tic
+%     for j = 1 : size( Data, 2)/queryLength
+%         Data( (j-1)*queryLength+1: j*queryLength) = zscore(  Data( (j-1)*queryLength+1: j*queryLength) );
+%     end
+    
+    for j = 1 : size(r,1)
+%       query = Data(1, (r(j)-1)*queryLength+1: r(j)*queryLength);
+%       data = Data(1, (r(c)-1)*queryLength+1: r(c)*queryLength);
+%       d = zNormED( Data(1, (r(j)-1)*queryLength+1: r(j)*queryLength), Data(1, (c(j)-1)*queryLength+1: c(j)*queryLength));
+        d = sqrt( sum( (Data(1, (r(j)-1)*queryLength+1: r(j)*queryLength) -... 
+        Data(1, (c(j)-1)*queryLength+1: c(j)*queryLength)).^2)); 
+        if( d > threshold )
+            FalseP = FalseP + 1;
+        end
+    end
+    toc
+    timeMatrix(log2(i)+1,2) = toc;
+    FractionMatrix(log2(i),1) = size(r,1)*200 / (size( Data, 2 )/queryLength)^2;
+    FractionMatrix(log2(i),2) = FalseP*200 / (size( Data, 2 )/queryLength)^2;
+    FractionMatrix(log2(i),3) = 100-FractionMatrix(log2(i),1);
+end
