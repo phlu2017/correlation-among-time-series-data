@@ -1,0 +1,45 @@
+queryLength = 1024;
+
+[OriDMap, MPI, timeSeriesI, time] = BuildMP( Data, queryLength, 1);
+[oriMins, MinsR, MinsC] = FindMinsMatrix( OriDMap, floor(size(OriDMap, 2)^2/2));
+
+RecordT = zeros(4,2);
+RecordT(1,1) = time;
+
+for i = [2, 4, 8, 16, 32, 64, 128, 256, 512]
+    % do PAA Transform
+    PAAData = PAA(Data, i);
+    
+    % BuildDM for PAAData
+    [PAADMap, MPI, timeSeriesI, time] = BuildMP( PAAData, queryLength, i);
+    RecordT(log2(i)+1, 1) = time;
+    m = queryLength/i;
+    Minsofar = inf;
+
+    tic
+    [Mins, MinsR, MinsC] = FindMinsMatrix( PAADMap, floor(size(PAADMap, 2)^2/2));
+    start = 1;
+    r = Mins;
+    while( r(start) < Minsofar)%size(r,1) ~= 0 )
+        %r = find ( Mins(start : size(Mins,1), 1) < Minsofar);
+%         if( )
+%             break;
+%         end
+%         dist = sqrt( sum( ( Data(( MinsR( r(1)+start-1 )-1 )*queryLength+1: MinsR( r(1)+start-1  )*queryLength) ...
+%             - Data(( MinsC( r(1)+start-1) -1 )*queryLength+1: MinsC( r(1)+start-1  )*queryLength)).^2));
+                dist = sqrt( sum( ( Data(( MinsR(start)-1 )*queryLength+1: MinsR( start )*queryLength) ...
+            - Data(( MinsC( start) -1 )*queryLength+1: MinsC( start )*queryLength)).^2));
+
+
+        if(Minsofar > dist)
+            Minsofar = dist;
+        end
+        %PAAdistance = PAADMap(MinsR(r(1+start)), MinsC(r(1+start))); 
+        start = start +1;
+        %r = find ( Mins(start : size(Mins,1), 1) < Minsofar);
+    end
+    toc
+    disp(['Done...smallest distance = ', num2str(Minsofar)]);
+    RecordT(log2(i)+1, 2) = toc;
+    RecordT(log2(i)+1, 3) = start;
+end
