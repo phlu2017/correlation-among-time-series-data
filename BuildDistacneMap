@@ -1,0 +1,33 @@
+function [MP, MPI, timeSeriesI, time] = BuildMP( Data, queryLength, PAAWeight)
+   
+    %for PAA
+    m = queryLength/PAAWeight;
+    
+    n = size(Data, 2);
+    N = size(Data, 2)/m;
+    
+    MP(1:N, 1:N) = inf;  
+    MPI(1:N, 1:N) = -1;
+    timeSeriesI(1:N, 1:N) = -1;
+    tic;
+%     for i = 1 : N
+%         Data( (i-1)*m+1: i*m) = zscore(  Data( (i-1)*m+1: i*m) );
+%     end
+    
+    
+    for i = 1 : N-1
+        Q = Data( (i-1)*m+1:i*m) ;
+ 
+        for j = i+1 : N
+
+              MP(i,j) = sqrt(PAAWeight)*sqrt( sum( (Q - Data((j-1)*m+1: j*m)).^2));
+        end
+
+    end
+    toc;
+    time = toc;
+    disp(['Done...PAA = ', num2str(PAAWeight)]);
+%    MPname = ['MP_t',num2str(PAAWeight),'.csv']; MPIname = ['MPI_t',num2str(PAAWeight),'.csv'];
+%     
+%    csvwrite(MPname, MP);csvwrite(MPIname, MPI);%csvwrite('timeSeriesI_1.csv' ,timeSeriesI);
+end
